@@ -2,6 +2,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Honstly, having ValidationReport as functions, rather than a seperate class,
+# would be easier for me to read and understand. But to be able to scale this project in 
+# the future, I am doing it as a Class now. 
+
 class ValidationReport:
     """
     A class to hold the validation results, while validating records.
@@ -34,7 +38,7 @@ class ValidationReport:
 
     @property
     def errors(self) -> list[str]:
-        """The list of reasons validation failed, in order."""
+        """The list of reasons validation failed."""
         return list(self._errors)
 
     def summary(self) -> str:
@@ -42,7 +46,7 @@ class ValidationReport:
         return f"{self._valid_count} valid, {self.failure_count} rejected"
 
 if __name__ == "__main__":
-    # Quick manual check with a mix of fake successes and failures.
+    # Quick check with hardcoded successes and failures, to see expected results
     logging.basicConfig(level=logging.DEBUG)
 
     report = ValidationReport()
