@@ -1,17 +1,26 @@
+# Needed on this Mac: Python's default certificate bundle (certifi) fails
+# to verify this API's certificate chain, even though the connection is
+# genuinely fine (curl and macOS trust it without issue). truststore
+# makes Python use macOS's own certificate verification instead.
+
+import truststore
+truststore.inject_into_ssl()
+
 import json
 import requests
 
 DAY_AHEAD_URL = "https://api.energidataservice.dk/dataset/DayAheadPrices"
 WIND_URL = "https://api.energidataservice.dk/dataset/ElectricityProdex5MinRealtime"
 
-# All fetch functions default to price area DK2 (Copenhagen/Sjælland area),
-# the scope of this project.
+# All fetch functions default to price area DK2 (Copenhagen/Sjælland area), the scope of this project.
+# Setting limits to fetch prices and production here as a default, so that noone accidentally fetches
+# too much data. However, this limit is overridden by calling the function at pipeline, where limits are also set 
+# (Hängslen och livrem...)
 
-def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 24):
+def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 96):
     """
     Fetch day-ahead electricity spot prices from Danish Energi Data Service.
-    Prices are quarter-hourly, so limit=24 returns the most recent 6 hours,
-    not a full day (a full day is 96 records). 
+    Prices are quarter-hourly, so limit=96 returns a full day.
 
     """
 
@@ -26,6 +35,10 @@ def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 24):
     }
     response = requests.get(DAY_AHEAD_URL, params=params)
     response.raise_for_status()
+
+    # returns a JSON dict,
+    # one dictionary with a keys (total, filters, limit, dataset) 
+    # plus one key, "records", which is a list of dictionaries (one dict per individual record)
     return response.json()
 
 
@@ -42,6 +55,8 @@ def fetch_wind_production(price_area: str = "DK2", limit: int = 5):
     }
     response = requests.get(WIND_URL, params=params)
     response.raise_for_status()
+
+    # returns a JSON dict
     return response.json()
 
 # Only run the following code when this script is executed directly, not when imported as a module
