@@ -5,6 +5,8 @@ from fetch import fetch_day_ahead_prices, fetch_wind_production
 from validate import DayAheadPrice, WindProduction
 from validation_report import ValidationReport
 
+from storage import save_to_csv
+
 logger = logging.getLogger(__name__)
 
 def validate_batch(records, model_class, report):
@@ -50,6 +52,10 @@ def run_pipeline():
 
     logger.info("Price validation: %s", price_report.summary())
     logger.info("Wind validation: %s", wind_report.summary())
+
+    # save the validated records to CSV in the data folder
+    save_to_csv(valid_prices, "data/dk2_prices.csv")
+    save_to_csv(valid_wind, "data/dk2_wind.csv")
 
     return valid_prices, valid_wind
 
