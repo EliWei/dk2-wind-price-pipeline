@@ -12,6 +12,16 @@ from pydantic import BaseModel
 # Using Pydantic's BaseModel here instead of a @dataclass, because
 # Pydantic's BaseModel basically IS a dataclass, but with enforced validation.
 
+# If I would have used a normal Class it would be structured as:
+# class DayAheadPriceManual:
+#    def __init__(self, TimeUTC, TimeDK, PriceArea, DayAheadPriceEUR, DayAheadPriceDKK):
+#        self.TimeUTC = TimeUTC
+#        self.TimeDK = TimeDK
+#        self.PriceArea = PriceArea
+#        self.DayAheadPriceEUR = DayAheadPriceEUR
+#        self.DayAheadPriceDKK = DayAheadPriceDKK
+# But self and __init__() are automatically handled by Pydantic's BaseModel, so I don't have to write them
+
 class DayAheadPrice(BaseModel):
     """
     A single day-ahead spot price record, validated against the shape
@@ -63,7 +73,7 @@ class WindProduction(BaseModel):
 
 if __name__ == "__main__":
 
-    # A standalone, quick manual check, using one real record from each dataset,
+    # A standalone, quick check, using one real record from each dataset,
     # which I have copied from an earlier live API fetch, to make sure the validation works
 
     sample_price = {

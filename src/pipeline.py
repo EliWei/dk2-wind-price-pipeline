@@ -1,10 +1,10 @@
 import logging
 
 from pydantic import ValidationError
+
 from fetch import fetch_day_ahead_prices, fetch_wind_production
 from validate import DayAheadPrice, WindProduction
 from validation_report import ValidationReport
-
 from storage import save_to_csv
 
 logger = logging.getLogger(__name__)
@@ -28,9 +28,11 @@ def validate_batch(records, model_class, report):
     return valid_records
 
 
-def run_pipeline():
+def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
 
-    """Fetch, validate, and report on both DK2 datasets."""
+    """Fetch, validate, save and report on both DK2 datasets.
+    Returns the validated records (not the CSV files) for each
+    dataset """
     
     # Both spot prices and wind production go into the same pipeline, but are validated separately
     # and gets their own ValidationReport
