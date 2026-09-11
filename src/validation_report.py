@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 # Honstly, having ValidationReport as functions, rather than a seperate class,
 # would be easier for me to read and understand. But to be able to scale this project in 

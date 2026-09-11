@@ -8,6 +8,9 @@ truststore.inject_into_ssl()
 
 import json
 import requests
+import logging
+
+logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 DAY_AHEAD_URL = "https://api.energidataservice.dk/dataset/DayAheadPrices"
 WIND_URL = "https://api.energidataservice.dk/dataset/ElectricityProdex5MinRealtime"
@@ -33,13 +36,16 @@ def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 96):
         "limit": limit,
         "filter": json.dumps({"PriceArea": price_area})
     }
+    logger.debug("Fetching day-ahead prices for %s, limit=%d", price_area, limit)
     response = requests.get(DAY_AHEAD_URL, params=params)
     response.raise_for_status()
 
     # returns a JSON dict,
     # one dictionary with a keys (total, filters, limit, dataset) 
     # plus one key, "records", which is a list of dictionaries (one dict per individual record)
-    return response.json()
+    data = response.json()
+    logger.info("Fetched %d price records for %s", len(data["records"]), price_area)
+    return data
 
 
 def fetch_wind_production(price_area: str = "DK2", limit: int = 5):

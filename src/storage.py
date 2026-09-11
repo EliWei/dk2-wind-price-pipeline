@@ -1,4 +1,7 @@
 import csv
+import logging
+
+logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 
 def save_to_csv(records: list, filepath: str) -> None:
@@ -7,6 +10,7 @@ def save_to_csv(records: list, filepath: str) -> None:
 
     """
     if not records:
+        logger.warning("No records to save -- skipping write to %s", filepath)
         return
 
     # Each record's fields become columns. We take the first record [0]
@@ -23,6 +27,7 @@ def save_to_csv(records: list, filepath: str) -> None:
     # and to write the records as rows in the CSV file
 
             writer.writerow(record.model_dump())
+    logger.info("Saved %d records to %s", len(records), filepath)
 
 # doing a self-test with sample data, not part of the pipeline
 # confirms save_to_csv writes records to a CSV file (saved in the data folder)

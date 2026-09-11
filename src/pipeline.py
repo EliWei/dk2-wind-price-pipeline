@@ -6,8 +6,9 @@ from fetch import fetch_day_ahead_prices, fetch_wind_production
 from validate import DayAheadPrice, WindProduction
 from validation_report import ValidationReport
 from storage import save_to_csv
+from logging_config import configure_logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 def validate_batch(records, model_class, report):
     """
@@ -61,7 +62,7 @@ def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
 
     return valid_prices, valid_wind
 
-
+# Set up console + file logging before anything else runs.
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    configure_logging()
     run_pipeline()
