@@ -59,11 +59,13 @@ def fetch_wind_production(price_area: str = "DK2", limit: int = 5):
         "limit": limit,
         "filter": json.dumps({"PriceArea": price_area})
     }
+    logger.debug("Fetching wind production for %s, limit=%d", price_area, limit)
     response = requests.get(WIND_URL, params=params)
     response.raise_for_status()
 
-    # returns a JSON dict
-    return response.json()
+    data = response.json()
+    logger.info("Fetched %d wind production records for %s", len(data["records"]), price_area)
+    return data
 
 # Only run the following code when this script is executed directly, not when imported as a module
 if __name__ == "__main__":
