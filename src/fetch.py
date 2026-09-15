@@ -3,8 +3,6 @@
 # genuinely fine (curl and macOS trust it without issue). truststore
 # makes Python use macOS's own certificate verification instead.
 
-from tracemalloc import start
-
 import truststore
 truststore.inject_into_ssl()
 
@@ -22,7 +20,10 @@ WIND_URL = "https://api.energidataservice.dk/dataset/ElectricityProdex5MinRealti
 # too much data. However, this limit is overridden by calling the function at pipeline, where limits are also set 
 # (Hängslen och livrem...)
 
-def fetch_day_ahead_prices(price_area: str = "DK2", start: str = "2026-09-11T00:00", end: str = "2026-09-12T00:00"):
+# All fetch functions default to price area defaults to DK2 (Copenhagen/Sjælland area), the scope of
+# this project. start/end have no default here (None) as pipeline.py calculates "yesterday" 
+
+def fetch_day_ahead_prices(price_area: str = "DK2", start: str = None, end: str = None):   
     """
     Fetch day-ahead electricity spot prices from Danish Energi Data Service.
     Prices are quarter-hourly, so limit=96 returns a full day.
@@ -53,8 +54,7 @@ def fetch_day_ahead_prices(price_area: str = "DK2", start: str = "2026-09-11T00:
     return data
 
 
-def fetch_wind_production(price_area: str = "DK2", start: str = "2026-09-11T00:00", end: str = "2026-09-12T00:00"):
-
+def fetch_wind_production(price_area: str = "DK2", start: str = None, end: str = None):
     """
     Fetch recent wind production data (5-minute intervals) from Energi Data Service.
 
@@ -75,15 +75,3 @@ def fetch_wind_production(price_area: str = "DK2", start: str = "2026-09-11T00:0
     logger.info("Fetched %d wind production records for %s", len(data["records"]), price_area)
     return data
 
-# Only run the following code when this script is executed directly, not when imported as a module
-if __name__ == "__main__":
-
-    # Quick manual check that both functions work — not part of the
-    # pipeline itself, only runs when this file is executed directly.
-    prices = fetch_day_ahead_prices()
-    print(f"Got {prices['total']} price records, showing {len(prices['records'])}")
-    print(prices['records'][0])
-
-    wind = fetch_wind_production()
-    print(f"\nGot {wind['total']} wind production records, showing {len(wind['records'])}")
-    print(wind['records'][0])
