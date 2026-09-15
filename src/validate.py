@@ -28,7 +28,7 @@ class DayAheadPrice(BaseModel):
     returned by the DayAheadPrices dataset.
     """
 
-    # For example, if the API sent PriceArea as a string instead of an actual number, 
+    # For example, if the API sent DayAheadPriceEUR as a string instead of an actual number, 
     # Pydantic would automatically convert it to a float.
     
     TimeUTC: datetime
@@ -75,6 +75,7 @@ if __name__ == "__main__":
 
     # A standalone, quick check, using one real record from each dataset,
     # which I have copied from an earlier live API fetch, to make sure the validation works
+    # Only runs when validate.py is called directly
 
     sample_price = {
         "TimeUTC": "2026-09-03T21:45:00",

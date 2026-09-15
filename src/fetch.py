@@ -5,10 +5,11 @@
 
 import truststore
 truststore.inject_into_ssl()
-
 import json
 import requests
 import logging
+
+from typing import Optional
 
 logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
@@ -21,9 +22,11 @@ WIND_URL = "https://api.energidataservice.dk/dataset/ElectricityProdex5MinRealti
 # (Hängslen och livrem...)
 
 # All fetch functions default to price area defaults to DK2 (Copenhagen/Sjælland area), the scope of
-# this project. start/end have no default here (None) as pipeline.py calculates "yesterday" 
+# this project. start/end have no default here (None) as pipeline.py calculates "yesterday". 
+# (As there is expectations of this being a str, I have used Optional[str] to indicate that it can be None, 
+# but if it is not None, it must be a str.) 
 
-def fetch_day_ahead_prices(price_area: str = "DK2", start: str = None, end: str = None):   
+def fetch_day_ahead_prices(price_area: str = "DK2", start: Optional[str] = None, end: Optional[str] = None):   
     """
     Fetch day-ahead electricity spot prices from Danish Energi Data Service.
     Prices are quarter-hourly, so limit=96 returns a full day.
@@ -54,7 +57,7 @@ def fetch_day_ahead_prices(price_area: str = "DK2", start: str = None, end: str 
     return data
 
 
-def fetch_wind_production(price_area: str = "DK2", start: str = None, end: str = None):
+def fetch_wind_production(price_area: str = "DK2", start: Optional[str] = None, end: Optional[str] = None):
     """
     Fetch recent wind production data (5-minute intervals) from Energi Data Service.
 

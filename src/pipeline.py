@@ -41,9 +41,10 @@ def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
     price_report = ValidationReport()
     wind_report = ValidationReport()
 
-    yesterday = datetime.now() - timedelta(days=1)
+    now = datetime.now()
+    yesterday = now - timedelta(days=1)
     start = yesterday.strftime("%Y-%m-%dT00:00")
-    end = datetime.now().strftime("%Y-%m-%dT00:00")
+    end = now.strftime("%Y-%m-%dT00:00")
 
     # Using "yesterday" rather than a fixed date: wind data lags by about
     # an hour and prices are published a day ahead, so yesterday is always
@@ -67,7 +68,8 @@ def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
 
     return valid_prices, valid_wind
 
-# Set up console + file logging before anything else runs.
 if __name__ == "__main__":
+
+    # Set up console + file logging before anything else runs.
     configure_logging()
     run_pipeline()

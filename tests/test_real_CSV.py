@@ -1,4 +1,4 @@
-""" Note, you have to have ran the pipeline.py script first to generate the CSV files before running this test. """
+""" Note, you have to have run the pipeline.py script first to generate the CSV files before running this test. """
 
 import pandas as pd
 
