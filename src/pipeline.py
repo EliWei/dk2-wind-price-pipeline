@@ -1,6 +1,7 @@
 import logging
 
 from pydantic import ValidationError
+from datetime import datetime, timedelta
 
 from fetch import fetch_day_ahead_prices, fetch_wind_production
 from validate import DayAheadPrice, WindProduction
@@ -40,11 +41,15 @@ def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
     price_report = ValidationReport()
     wind_report = ValidationReport()
 
-    #Limit set to 96 this is a full day of 15 min prices
-    raw_prices = fetch_day_ahead_prices(limit=96)
+    yesterday = datetime.now() - timedelta(days=1)
+    start = yesterday.strftime("%Y-%m-%dT00:00")
+    end = datetime.now().strftime("%Y-%m-%dT00:00")
 
-    #Limit set to 288 this is a full day of 5 min wind production records
-    raw_wind = fetch_wind_production(limit=288)
+    # Using "yesterday" rather than a fixed date: wind data lags by about
+    # an hour and prices are published a day ahead, so yesterday is always
+    # a safe, full day for both datasets, no matter when this runs.
+    raw_prices = fetch_day_ahead_prices(start=start, end=end)
+    raw_wind = fetch_wind_production(start=start, end=end)
 
     valid_prices = validate_batch(
         raw_prices["records"], DayAheadPrice, price_report

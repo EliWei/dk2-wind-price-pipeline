@@ -3,6 +3,8 @@
 # genuinely fine (curl and macOS trust it without issue). truststore
 # makes Python use macOS's own certificate verification instead.
 
+from tracemalloc import start
+
 import truststore
 truststore.inject_into_ssl()
 
@@ -20,7 +22,7 @@ WIND_URL = "https://api.energidataservice.dk/dataset/ElectricityProdex5MinRealti
 # too much data. However, this limit is overridden by calling the function at pipeline, where limits are also set 
 # (Hängslen och livrem...)
 
-def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 96):
+def fetch_day_ahead_prices(price_area: str = "DK2", start: str = "2026-09-11T00:00", end: str = "2026-09-12T00:00"):
     """
     Fetch day-ahead electricity spot prices from Danish Energi Data Service.
     Prices are quarter-hourly, so limit=96 returns a full day.
@@ -33,10 +35,13 @@ def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 96):
     # (Coverts Python dict into a JSON string)
 
     params = {
-        "limit": limit,
-        "filter": json.dumps({"PriceArea": price_area})
+    "start": start,
+    "end": end,
+    "filter": json.dumps({"PriceArea": price_area})
     }
-    logger.debug("Fetching day-ahead prices for %s, limit=%d", price_area, limit)
+
+    logger.debug("Fetching day-ahead prices for %s, %s to %s", price_area, start, end)
+
     response = requests.get(DAY_AHEAD_URL, params=params)
     response.raise_for_status()
 
@@ -48,7 +53,7 @@ def fetch_day_ahead_prices(price_area: str = "DK2", limit: int = 96):
     return data
 
 
-def fetch_wind_production(price_area: str = "DK2", limit: int = 5):
+def fetch_wind_production(price_area: str = "DK2", start: str = "2026-09-11T00:00", end: str = "2026-09-12T00:00"):
 
     """
     Fetch recent wind production data (5-minute intervals) from Energi Data Service.
@@ -56,10 +61,13 @@ def fetch_wind_production(price_area: str = "DK2", limit: int = 5):
     """
 
     params = {
-        "limit": limit,
-        "filter": json.dumps({"PriceArea": price_area})
+    "start": start,
+    "end": end,
+    "filter": json.dumps({"PriceArea": price_area})
     }
-    logger.debug("Fetching wind production for %s, limit=%d", price_area, limit)
+
+    logger.debug("Fetching wind production for %s, %s to %s", price_area, start, end)
+    
     response = requests.get(WIND_URL, params=params)
     response.raise_for_status()
 
