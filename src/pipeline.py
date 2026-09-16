@@ -13,7 +13,8 @@ logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 def validate_batch(records, model_class, report):
     """
-    Validate every record in a batch against model_class.
+    Validates every record in a batch against model_class.
+    (Both price and wind.)
 
     Records that pass are returned in a list. Records that fail are
     recorded on the given ValidationReport instead of stopping the
@@ -22,7 +23,7 @@ def validate_batch(records, model_class, report):
     valid_records = []
     for record in records:
         try:
-            validated = model_class(**record)
+            validated = model_class(**record) #unpacks the dict to keyword arguments
             report.record_success()
             valid_records.append(validated)
         except ValidationError as e:
@@ -36,22 +37,24 @@ def run_pipeline() -> tuple[list[DayAheadPrice], list[WindProduction]]:
     Returns the validated records (not the CSV files) for each
     dataset """
     
-    # Both spot prices and wind production go into the same pipeline, but are validated separately
-    # and gets their own ValidationReport
+    # Both spot prices and wind production go into the same pipeline, 
+    # but are validated separately and gets their own ValidationReport
     price_report = ValidationReport()
     wind_report = ValidationReport()
 
+    # Using "yesterday" rather than a fixed date or the most recent 24 hours: 
+    # wind data lags by about an hour and prices are published a day ahead, 
+    # so yesterday is always a safe, full day for both datasets, no matter
+    # when this runs.
     now = datetime.now()
     yesterday = now - timedelta(days=1)
     start = yesterday.strftime("%Y-%m-%dT00:00")
     end = now.strftime("%Y-%m-%dT00:00")
 
-    # Using "yesterday" rather than a fixed date: wind data lags by about
-    # an hour and prices are published a day ahead, so yesterday is always
-    # a safe, full day for both datasets, no matter when this runs.
     raw_prices = fetch_day_ahead_prices(start=start, end=end)
     raw_wind = fetch_wind_production(start=start, end=end)
 
+    # Just passing the Classes themselves, not instances, to validate_batch
     valid_prices = validate_batch(
         raw_prices["records"], DayAheadPrice, price_report
     )

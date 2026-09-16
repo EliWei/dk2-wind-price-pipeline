@@ -64,9 +64,10 @@ class WindProduction(BaseModel):
 
     ExchangeGreatBelt: float
     ExchangeGermany: float
-    ExchangeNetherlands: Optional[float] = None
-    ExchangeGreatBritain: Optional[float] = None
-    ExchangeNorway: Optional[float] = None
+    # Can be float or None, and if there is no value, Pydantic will set it to None
+    ExchangeNetherlands: float | None = None
+    ExchangeGreatBritain: float | None = None
+    ExchangeNorway: float | None = None
     ExchangeSweden: float
     BornholmSE4: float
 
@@ -74,8 +75,8 @@ class WindProduction(BaseModel):
 if __name__ == "__main__":
 
     # A standalone, quick check, using one real record from each dataset,
-    # which I have copied from an earlier live API fetch, to make sure the validation works
-    # Only runs when validate.py is called directly
+    # which I have copied from an earlier live API fetch, to make sure the validation works.
+    # Only runs when validate.py is called directly.
 
     sample_price = {
         "TimeUTC": "2026-09-03T21:45:00",
@@ -84,7 +85,7 @@ if __name__ == "__main__":
         "DayAheadPriceEUR": 134.940002,
         "DayAheadPriceDKK": 1008.649527,
     }
-    validated_price = DayAheadPrice(**sample_price)
+    validated_price = DayAheadPrice(**sample_price) #unpacks the dict to keyword arguments
     print(validated_price)
 
     sample_wind = {
@@ -104,5 +105,5 @@ if __name__ == "__main__":
         "ExchangeSweden": 335.329987,
         "BornholmSE4": -24.77,
     }
-    validated_wind = WindProduction(**sample_wind)
+    validated_wind = WindProduction(**sample_wind) #unpacks the dict to keyword arguments
     print(validated_wind)

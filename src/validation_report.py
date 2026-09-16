@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 
 # Honestly, having ValidationReport as functions, rather than a separate class,
-# would be easier for me to read and understand. But to be able to scale this project in 
+# would be easier for me to read. But to be able to scale this project in 
 # the future, I am doing it as a Class now. 
 
 class ValidationReport:

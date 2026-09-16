@@ -50,8 +50,8 @@ def fetch_day_ahead_prices(price_area: str = "DK2", start: Optional[str] = None,
     response.raise_for_status()
 
     # returns a JSON dict,
-    # one dictionary with a keys (total, filters, limit, dataset) 
-    # plus one key, "records", which is a list of dictionaries (one dict per individual record)
+    # one dictionary with keys (total, filters, limit, dataset) plus one key, 
+    # "records", which is a list of dictionaries (one dict per individual record)
     data = response.json()
     logger.info("Fetched %d price records for %s", len(data["records"]), price_area)
     return data
