@@ -6,6 +6,8 @@ logger = logging.getLogger(f"dk2_pipeline.{__name__}")
 # would be easier for me to read. But to be able to scale this project in 
 # the future, I am doing it as a Class now. 
 
+# And summary() is the only function that is actually used by the pipeline
+
 class ValidationReport:
     """
     A class to track the results of validating records.
